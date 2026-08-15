@@ -1,135 +1,3 @@
-// import { useState } from 'react';
-// import {useNavigate} from 'react-router-dom';
-// import {verifyOtp} from '../services/authApi.js';
-
-// export default function OtpVerification({email,}){
-
-//     const [otp, setOtp] = useState('');
-
-//     const [loading, setLoading] = useState(false);
-
-//     const [error, setError] = useState('');
-
-//     const navigate = useNavigate();
-
-//     const handleSubmit = async(e) => {
-//         e.preventDefault();
-//         try{
-//             setLoading(true);
-//             setError('');
-            
-//             const data = await verifyOtp({email, otp});
-
-//             localStorage.setItem (
-//                 'token',
-//                 data.token
-//             );
-
-//             localStorage.setItem (
-//                 'user',
-//                 JSON.stringify(
-//                     data.user
-//                 )
-//             );
-
-//             navigate('/dashboard');
-
-//             alert(
-//                 'Login Successful'
-//             );
-
-//         } catch(error) {
-
-//             setError(
-//             error.message
-//             );
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     return (
-//         <div className="
-//             bg-slate-900
-//             border
-//             border-white/10
-//             rounded-3xl
-//             p-8
-//             shadow-xl
-//         ">
-
-//             <h2 className="
-//                 text-3xl
-//                 font-bold
-//                 text-cyan-400
-//                 mb-4
-//             "> OTP Verification</h2>
-
-//             <p className="
-//                 text-gray-400
-//                 mb-6
-//             ">Enter OTP sent to:{email}</p>
-
-//             {error && (
-//             <div className="
-//                 bg-red-500/20
-//                 text-red-300
-//                 p-3
-//                 rounded-xl
-//                 mb-4
-//             ">{error}</div>)}
-
-//             <form onSubmit={handleSubmit}
-//                 className="space-y-5"
-//             >
-//                 <input 
-//                     type="text"
-//                     placeholder="Enter OTP"
-//                     value={otp}
-
-//                     onChange={(e) =>
-//                         setOtp(e.target.value)
-//                     }
-
-//                     className="
-//                         w-full
-//                         rounded-2xl
-//                         px-5
-//                         py-4
-//                         bg-black/40
-//                         border
-//                         border-white/10
-//                         outline-none
-//                         "
-//                     />
-
-//                     <button type="submit"
-
-//                         disabled={
-//                             loading
-//                         }
-
-//                         className="
-//                         w-full
-//                         bg-cyan-400
-//                         text-black
-//                         font-bold
-//                         rounded-2xl
-//                         py-4
-//                         "
-//                     >
-
-//                     { loading?
-//                     'Verifying...'
-//                     :
-//                     'Verify OTP'
-//                     }
-//                 </button>
-//             </form>
-//         </div> 
-//     )
-// }
-
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -158,23 +26,73 @@ import { Link as RouterLink } from "react-router-dom";
 
 import dashboardMockup from "../assets/dashboardMCKP.png";
 import authBackground from "../assets/signup1.png";
+import Alert from "@mui/material/Alert";
 import logo from "../assets/favicon.png";
+
+// import { useLocation } from "react-router-dom";
+import { resendOtp } from "../services/authApi.js";
+import { getVerificationSession } from "../services/authApi.js";
+import { verifyOtp } from "../services/authApi.js";
+import { useNavigate } from "react-router-dom";
 
 const OTP_LENGTH = 6;
 
 export default function SignupOtpVerification() {
 
+ const navigate = useNavigate();
+
  const [otp, setOtp] = useState(
     Array(OTP_LENGTH).fill("")
   );
 
+  // State for countdown timer and loading state
   const [seconds, setSeconds] = useState(60);
   const [loading, setLoading] = useState(false);
 
+  // State for success and error messages
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  // State for masked email
+  const [maskedEmail, setMaskedEmail] = useState("");
+
   const inputRefs = useRef([]);
 
-  // Replace this with wherever your email comes from
-  const email = "user@example.com";
+  // // Get email from location state
+  // const location = useLocation();
+  // const email = location.state?.email || "";
+
+  // // Mask email for display
+  // const maskEmail = (email) => {
+  //   if (!email) return "";
+
+  //   const [username, domain] = email.split("@");
+
+  //   const visible = username.slice(0, 2);
+
+  //   const hidden = "*".repeat(
+  //     Math.max(username.length - 2, 3)
+  //   );
+
+  //   return `${visible}${hidden}@${domain}`;
+  // };
+
+  // Fetch masked email from verification session
+  useEffect(() => {
+    const fetchVerificationSession = async () => {
+        try {
+          const response = await getVerificationSession();
+
+          setMaskedEmail(
+            response.maskedEmail
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    fetchVerificationSession();
+  }, []);
 
   // Focus first input on page load
   useEffect(() => {
@@ -211,8 +129,7 @@ export default function SignupOtpVerification() {
 
   // Handle backspace
   const handleKeyDown = (
-    event,
-    index
+    event, index
   ) => {
     if (
       event.key === "Backspace" &&
@@ -257,22 +174,89 @@ export default function SignupOtpVerification() {
     try {
       setLoading(true);
 
-      await authApi.resendOtp({
-        email,
-      });
+      const response = await resendOtp();
+
+      setSuccess(
+        response.message || "OTP resent successfully."
+      );
+
+      setError("");
 
       // Restart countdown
       setSeconds(60);
 
-      // Clear previous OTP
-      setOtp(
-        Array(OTP_LENGTH).fill("")
+      // Clear OTP boxes
+      setOtp(Array(OTP_LENGTH).fill(""));
+
+      // Focus first box
+      inputRefs.current[0]?.focus();
+
+    } catch (error) {
+      console.error(error);
+      setSuccess("");
+      setError(
+        error.message || "Failed to resend OTP. Please try again."
       );
 
-      // Focus first input
-      inputRefs.current[0]?.focus();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+  
+    const otpCode = otp.join("");
+
+    // Make sure all 6 digits are entered
+    if (otpCode.length !== OTP_LENGTH) {
+      setError("Please enter the complete OTP.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      setError("");
+      setSuccess("");
+
+      const response = await verifyOtp(
+        otpCode
+      );
+
+      console.log(
+        "OTP verification successful:", response
+      );
+
+      // Save JWT
+      if (response.token) {
+        localStorage.setItem("token", response.token);
+      }
+
+      // Save logged in user
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.user)
+      );
+
+      setSuccess(
+        response.message || "Email verified successfully!"
+      );
+
+      setTimeout(() => {
+        navigate("/workspace-activated", {
+          replace: true,
+          state: {
+            user: response.user,
+          },
+        });
+      }, 1500);
+
     } catch (err) {
-      console.error(err);
+      console.error(
+        "OTP verification error:",
+        error
+      );
+      setError(err.message || "Failed to verify OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -398,20 +382,6 @@ export default function SignupOtpVerification() {
               </Box>
             </Stack>
 
-            {/* <Chip
-              icon={
-                <CheckCircleRoundedIcon />
-              }
-              label="Account Created Successfully"
-              sx={{
-                width: "fit-content",
-                bgcolor: "rgba(16,185,129,.12)",
-                color: "#fff",
-                // color: "#10B981",
-                fontWeight: 700,
-              }}
-            /> */}
-
             <Box>
               <Typography
                 variant="h4"
@@ -477,7 +447,7 @@ export default function SignupOtpVerification() {
                   ml: 1,
                 }}
               >
-                john@example.com
+                {maskedEmail}
               </Box>
             </Typography>
 
@@ -536,11 +506,23 @@ export default function SignupOtpVerification() {
               </Stack>
             </Box>
 
+            {success && (
+                <Alert severity="success">
+                    {success}
+                </Alert>
+            )}
+
+            {error && (
+                <Alert severity="error">
+                    {error}
+                </Alert>
+            )}
+
             <Button
-              component={RouterLink}
-              to="/workspace-activated"
               fullWidth
               size="large"
+              onClick={handleVerifyOtp}
+              disabled={loading || otp.join("").length !== OTP_LENGTH}
               variant="contained"
               endIcon={
                 <ArrowForwardRoundedIcon
@@ -588,7 +570,7 @@ export default function SignupOtpVerification() {
                 },
               }}
             >
-              Activate Workspace
+              {loading ? "Activating..." : "Activate Workspace"}
             </Button>
 
             <Stack

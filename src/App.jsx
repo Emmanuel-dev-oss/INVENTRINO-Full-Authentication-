@@ -10,7 +10,7 @@ import OtpVerification from "./components/OtpVerification.jsx";
 import ForgotPassword from "./components/ForgotPassword.jsx"
 import VerifyResetOtp from "./components/VerifyResetOtp.jsx";
 import ResetPassword from "./components/ResetPassword.jsx";
-import WorkspaceActivated from "./components/WorkspaceActivated.jsx";
+import Workspaceactivated from "./components/Workspaceactivated.jsx";
 
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
@@ -62,7 +62,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/otp-verification" element={<OtpVerification />} />
         <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
-        <Route path="/workspace-activated" element={<WorkspaceActivated />} />
+        <Route path="/workspace-activated" element={<Workspaceactivated />} />
 
         <Route path="/dashboard" element={
           <ProtectedRoute>

@@ -38,6 +38,9 @@ export const signupUser = async (userData) => {
         headers: {
           'Content-Type': 'application/json',
         },
+
+        credentials: "include",
+
         body: JSON.stringify(userData),
       }
     );
@@ -57,31 +60,86 @@ export const signupUser = async (userData) => {
 };
 
 // VERIFY OTP
-export const verifyOtp = async (otpData) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/verify-otp`,
-      {
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify(otpData)
-      }
-    )
+export const verifyOtp = async (otp) => {
+  const response = await fetch(
+    `${BASE_URL}/verify-otp`,
+    {
+      method: "POST",
 
-    const data = await response.json()
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      credentials: "include",
+
+      body: JSON.stringify({
+        otp,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to verify OTP."
+    );
+  }
+
+  return data;
+};
+
+// GET VERIFICATION SESSION
+export const getVerificationSession = async () => {
+
+    const verificationToken = sessionStorage.getItem(
+      "verificationToken"
+    );
+
+    const response = await fetch(
+      `${BASE_URL}/verification-session`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${verificationToken}`,
+        },
+      }
+    );
+
+    const data = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        data.message || 'OTP failed'
-      )
+        data.message || "Unable to load verification session."
+      );
     }
-    return data
-  } catch (error) {
-    throw error;
+    return data;
+  };
+
+  
+// RESEND OTP
+export const resendOtp = async () => {
+  const verificationToken = sessionStorage.getItem("verificationToken");
+
+  const response = await fetch(
+    `${BASE_URL}/resend-otp`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${verificationToken}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Failed to resend OTP"
+    );
   }
-}
+  return data;
+};
 
 // FORGOT PASSWORD
 export const forgotPassword = async (email) => {
