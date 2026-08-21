@@ -48,6 +48,7 @@ export default function SignupOtpVerification() {
   // State for countdown timer and loading state
   const [seconds, setSeconds] = useState(60);
   const [loading, setLoading] = useState(false);
+  const [activate, setActivate] = useState(false);
 
   // State for success and error messages
   const [success, setSuccess] = useState("");
@@ -214,7 +215,7 @@ export default function SignupOtpVerification() {
     }
 
     try {
-      setLoading(true);
+      setActivate(true);
       
       setError("");
       setSuccess("");
@@ -258,7 +259,7 @@ export default function SignupOtpVerification() {
       );
       setError(err.message || "Failed to verify OTP. Please try again.");
     } finally {
-      setLoading(false);
+      setActivate(false);
     }
   };
 
@@ -368,7 +369,7 @@ export default function SignupOtpVerification() {
                     },
                     fontWeight: 900,
                     lineHeight: 1,
-                    background: "linear-gradient(90deg,#10B981,#06B6D4)",
+                    background: "linear-gradient(90deg, #10B981, #06B6D4)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     textAlign: {
@@ -522,7 +523,7 @@ export default function SignupOtpVerification() {
               fullWidth
               size="large"
               onClick={handleVerifyOtp}
-              disabled={loading || otp.join("").length !== OTP_LENGTH}
+              disabled={activate || otp.join("").length !== OTP_LENGTH}
               variant="contained"
               endIcon={
                 <ArrowForwardRoundedIcon
@@ -570,7 +571,7 @@ export default function SignupOtpVerification() {
                 },
               }}
             >
-              {loading ? "Activating..." : "Activate Workspace"}
+              {activate ? "Activating..." : "Activate Workspace"}
             </Button>
 
             <Stack
@@ -668,9 +669,9 @@ export default function SignupOtpVerification() {
                 mt: 4,
                 p: 3,
                 borderRadius: 4,
-                background: "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)",
+                background: "linear-gradient(135deg, #10b981 0%,   #0F172A 100%)",
                 border: "1px solid rgba(16,185,129,.15)",
-                borderLeft: "5px solid #10B981",
+                // borderLeft: "5px solid #10B981",
                 boxShadow: "0 10px 30px rgba(15,23,42,.05)",
               }}
             >
@@ -696,7 +697,7 @@ export default function SignupOtpVerification() {
                 >
                   <SecurityRoundedIcon
                     sx={{
-                      color: "#10B981",
+                      color: "#ffffff",
                       fontSize: 28,
                     }}
                   />
@@ -704,16 +705,22 @@ export default function SignupOtpVerification() {
                 <Typography
                   variant="body2"
                   color="#10B981"
-                  fontWeight={600}
+                  fontWeight={700}
                   sx={{
                     alignSelf: "center",
+                    color: "#fff",
+                    fontSize: "14px"
                   }}
                 >
                   Secure Email Verification
                 </Typography>
               </Stack>
 
-              <Stack spacing={2}>
+              <Stack spacing={2}
+                 sx={{
+                    alignItems: "center"
+                 }}
+              >
                 <Stack
                   direction="row"
                   spacing={1.5}
@@ -721,14 +728,18 @@ export default function SignupOtpVerification() {
                 >
                   <VerifiedUserRoundedIcon
                     sx={{
-                      color: "#10B981",
+                      color: "#fff",
+                    // color: "#475569",
                       fontSize: 20,
                     }}
                   />
 
                   <Typography
                     variant="body2"
-                    color="#475569"
+                    // color="#475569"
+                    sx={{
+                      color: "#fff",
+                    }}
                   >
                     Verification codes expire after{" "}
                     <strong>5 minutes</strong>.
@@ -740,16 +751,21 @@ export default function SignupOtpVerification() {
                   spacing={1.5}
                   alignItems="center"
                 >
-                  <VerifiedUserRoundedIcon
+                  {/* <VerifiedUserRoundedIcon
                     sx={{
                       color: "#10B981",
                       fontSize: 20,
                     }}
-                  />
+                  /> */}
 
                   <Typography
                     variant="body2"
                     color="#475569"
+                    sx={{
+                      textAlign: "center",
+                      // color: "#475569"
+                      color: "#fff",
+                    }}
                   >
                     Your account remains protected
                     until your email address has been

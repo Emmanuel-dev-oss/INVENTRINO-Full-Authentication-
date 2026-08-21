@@ -468,7 +468,8 @@ export default function LoginPage() {
                 xs: 3,
                 md: 4,
               },
-              bgcolor: "#F8FAFC",
+               background: "linear-gradient(135deg, #10b981 0%,   #0F172A 100%)",
+              // bgcolor: "#F8FAFC",
               border: "1px solid rgba(148,163,184,.15)",
             }}
           >
@@ -485,7 +486,7 @@ export default function LoginPage() {
             >
               <SecurityRoundedIcon
                 sx={{
-                  color: "#10B981",
+                  color: "#ffffff",
                   fontSize: {
                     xs: 20,
                     sm: 22,
@@ -502,15 +503,16 @@ export default function LoginPage() {
                     sm: "1rem",
                     md: "1.05rem",
                   },
+                  color: "#ffffff",
                 }}
               >
-                Enterprise Security
+                Secure & Reliable
               </Typography>
             </Stack>
 
             <Typography
               sx={{
-                color: "#64748B",
+                color: "#CBD5E1",
                 fontSize: {
                   xs: "0.875rem",
                   sm: "0.95rem",

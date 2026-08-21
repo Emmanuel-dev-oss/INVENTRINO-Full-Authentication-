@@ -39,7 +39,8 @@ import dashboardMCKP from "../assets/dashboardMCKP.png"
 import {textFieldStyles} from "../utils/textFieldStyles.js"
 import {authTextFieldStyles} from "../utils/authTextFieldStyles.js"
 
-import { signupUser } from "../services/authApi";
+import { signupUser, googleSignup } from "../services/authApi.js";
+import { GoogleLogin } from '@react-oauth/google';
 
 const getPasswordStrength = (password) => {
   let score = 0;
@@ -692,35 +693,55 @@ export default function SignupPage() {
                 )}
               </Button>
 
-              <Button
-                fullWidth
-                variant="outlined"
-                startIcon={<FcGoogle />}
-                onClick={() => alert("Sign up with Google")}
+              <Box
                 sx={{
-                  py: 1.5,
-                  borderRadius: 3,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: "0.95rem",
-                  color: "black",
-                  borderColor: "#10b981c5",
-                  backgroundColor: "rgba(255,255,255,0.02)",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    borderColor: "#10B981",
-                    backgroundColor: "rgba(16,185,129,0.06)",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0 8px 24px rgba(16, 185, 129, 0.04)",
+                  "& > div": {
+                    width: "100%",
                   },
-
-                  "&:active": {
-                    transform: "translateY(0)",
-                  },
+                  "& > div > div": {
+                    width: "100%",
+                  }
                 }}
               >
-                Continue with Google
-              </Button>
+                <GoogleLogin
+                  onSuccess={async (credentialResponse) => {
+                    try {
+                      setLoading(true);
+                      const response = await googleSignup(credentialResponse.credential);
+                      
+                      sessionStorage.setItem(
+                        "verificationToken",
+                        response.verificationToken
+                      );
+
+                      setSuccess(response.message);
+
+                      setTimeout(() => {
+                        if (response.nextStep === "VERIFY_OTP") {
+                          navigate("/otp-verification", {
+                            state: {
+                              email: response.user.email,
+                            },
+                          });
+                        } else if (response.nextStep === "DASHBOARD") {
+                          navigate("/dashboard");
+                        }
+                      }, 1200);
+                    } catch (err) {
+                      setError(err.message || "Google signup failed");
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  onError={() => {
+                    setError("Google signup failed. Please try again.");
+                  }}
+                  text="signup_with"
+                  size="large"
+                  width="100%"
+                  theme="filled_black"
+                />
+              </Box>
 
               <Typography
                 textAlign="center"

@@ -222,3 +222,32 @@ export const resetPassword = async (dataInput) => {
     throw error;
   }  
 };
+
+// GOOGLE SIGNUP
+export const googleSignup = async (googleToken) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/google-signup`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ token: googleToken }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Google signup failed"
+      );
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
