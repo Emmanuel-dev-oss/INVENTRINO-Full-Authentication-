@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000/api/users';
+const BASE_URL = 'https://inventrino-server.onrender.com';
 
 // LOGIN USER
 export const loginUser = async (userData) => {
