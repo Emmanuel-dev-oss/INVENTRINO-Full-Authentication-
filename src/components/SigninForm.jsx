@@ -468,7 +468,7 @@ export default function LoginPage() {
                 xs: 3,
                 md: 4,
               },
-               background: "linear-gradient(135deg, #10b981 0%,   #0F172A 100%)",
+               background: "linear-gradient(45deg, #0F172A 20%, #10b981 100%)",
               // bgcolor: "#F8FAFC",
               border: "1px solid rgba(148,163,184,.15)",
             }}
