@@ -1,10 +1,10 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // LOGIN USER
 export const loginUser = async (userData) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/login`,
+      `${API_BASE_URL}/auth/login`,
       {
         method: 'POST',
         headers: {
@@ -32,7 +32,7 @@ export const loginUser = async (userData) => {
 export const signupUser = async (userData) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/register`,
+      `${API_BASE_URL}/auth/register`,
       {
         method: 'POST',
         headers: {
@@ -62,7 +62,7 @@ export const signupUser = async (userData) => {
 // VERIFY OTP
 export const verifyOtp = async (otp) => {
   const response = await fetch(
-    `${API_BASE_URL}/verify-otp`,
+    `${API_BASE_URL}/auth/verify-otp`,
     {
       method: "POST",
 
@@ -97,7 +97,7 @@ export const getVerificationSession = async () => {
     );
 
     const response = await fetch(
-      `${API_BASE_URL}/verification-session`,
+      `${API_BASE_URL}/auth/verification-session`,
       {
         method: "GET",
         headers: {
@@ -122,7 +122,7 @@ export const resendOtp = async () => {
   const verificationToken = sessionStorage.getItem("verificationToken");
 
   const response = await fetch(
-    `${API_BASE_URL}/resend-otp`,
+    `${API_BASE_URL}/auth/resend-otp`,
     {
       method: "POST",
       headers: {
@@ -145,7 +145,7 @@ export const resendOtp = async () => {
 export const forgotPassword = async (email) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/forgot-password`,
+      `${API_BASE_URL}/auth/forgot-password`,
       {
         method: "POST",
         headers: {
@@ -172,7 +172,7 @@ export const forgotPassword = async (email) => {
 export const verifyResetOtp = async (dataInput) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/verify-reset-otp`,
+      `${API_BASE_URL}/auth/verify-reset-otp`,
       {
         method: "POST",
         headers: {
@@ -199,7 +199,7 @@ export const verifyResetOtp = async (dataInput) => {
 export const resetPassword = async (dataInput) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/reset-password`,
+      `${API_BASE_URL}/auth/reset-password`,
       {
         method: "POST",
         headers: {
@@ -227,7 +227,7 @@ export const resetPassword = async (dataInput) => {
 export const googleSignup = async (googleToken) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/google-signup`,
+      `${API_BASE_URL}/auth/google-signup`,
       {
         method: "POST",
         headers: {
@@ -237,7 +237,7 @@ export const googleSignup = async (googleToken) => {
         body: JSON.stringify({ token: googleToken }),
       }
     );
-
+ 
     const data = await response.json();
 
     if (!response.ok) {
